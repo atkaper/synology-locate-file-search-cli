@@ -52,8 +52,8 @@ Which can be seen in run.sh as:
 Make sure to add folders you want indexed in the same way. Each on a separate line, ending in a backslash.
 And make sure you do NOT remove the (not shown) -v line, which maps to /var/lib/mlocate, as that will contain the index.
 
-Note: better do NOT map you synology root "/" to some docker folder, and also do not map complete "/volume1"
-from synology to docker /volume1. This will work, but will NOT mount the volume readonly, which might be a
+Note: better do NOT map your synology root "/" to some docker folder, and also do not map complete "/volume1"
+from synology to docker /volume1. This will work, but will NOT mount the volume read only, which might be a
 security risk. Better mount all to be indexed folders separately. See later in this REAME.md on how to do that.
 
 When run.sh is OK, then execute the next commands:
@@ -78,7 +78,7 @@ Only at night, resource use will shortly increase a bit, when indexing.
 To make the "locate" and "updatedb" aliases available after every logon, you should add this line to your ~/.profile:
 
 ```
-# next line must start with a dot and a space. This will add the aliases to the current shell context. Wont work without dot-space!
+# next line must start with a dot and a space. This will add the aliases to the current shell context. Won't work without dot-space!
 . /volume1/docker/mlocate/locate-alias.sh
 ```
 
@@ -87,7 +87,7 @@ Where /volume1/docker/mlocate/ of course must reflect the location where you ins
 Note: out of the box, only root can execute docker commands. If you do not want to run as root, to type "locate", there are multiple options to fix this.
 
 ```
-# option 1 - enable docker commands for all users in the admininstrators group:
+# option 1 - enable docker commands for all users in the administrators group:
 sudo chown root:administrators /var/run/docker.sock
 
 # option 2 - add "sudo " in front of the docker commands in the locate-alias.sh file, like this:
@@ -121,7 +121,7 @@ docker exec -ti mlocate /updatedb.sh
 Add a line at the bottom of /etc/sudoers:
 
 ```
-%users ALL=(ALL) NOPASSWD: /usr/local/bin/locate,/usr/local/bin/updatedb
+%users ALL=(ALL) NOPASSWD: /usr/local/bin/locate, /usr/local/bin/updatedb
 ```
 
 And then any user can type "sudo locate test123", or "sudo updatedb".
@@ -130,4 +130,8 @@ Note: I have not tested this last setup yet, but should work fine.
 
 
 Thijs Kaper, May 8, 2021.
+
+
+Note: see also https://github.com/atkaper/synology-universal-search-cli and https://www.kaper.com/software/synology-universal-search-cli/
+for an alternative search on synology command line.
 
