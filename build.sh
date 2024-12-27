@@ -1,1 +1,1 @@
-docker build -t local/mlocate .
+docker build -t local/locate .

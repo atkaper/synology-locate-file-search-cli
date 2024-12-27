@@ -1,4 +1,6 @@
-# locate / mlocate / updatedb - Synology File Search in a docker container
+# locate / plocate / updatedb - Synology File Search in a docker container
+
+(updated december 27, 2024 - replaced mlocate by plocate - added utf8 support - skip recycle bin on synology)
 
 Synology "forgot" to add the linux "locate" command in their NAS systems.
 As I quite like the speed of it, I added a locate implementation, by just running it inside a docker container, on the NAS itself.
@@ -23,16 +25,16 @@ In that case, just search for volume1 and replace by the proper name. You can at
 volumes, like /volume1/someshare and /volume2/anothershare, but you can index multiple folders inside one volume.
 For example: /volume1/download, /volume1/music, /volume1/docker. If you need multiple volumes, the simplest
 solution is to index / instead of /volume1 in the scripts. This will also index the docker system files, but
-you could ignore them when searching, or maybe add an exclude option to skip them in the updatedb.mlocate command.
+you could ignore them when searching, or maybe add an exclude option to skip them in the updatedb command.
 
-To install this search setup, copy all the files to your nas, for example in folder /volume1/docker/mlocate/
+To install this search setup, copy all the files to your nas, for example in folder /volume1/docker/locate/
 In there, execute the following command (if you need to change /volume1 name, do it before this build):
 
 ```
 ./build.sh
 ```
 
-This above line builds the docker container. It uses an ubuntu base image, adds mlocate, and copies the scripts in there.
+This above line builds the docker container. It uses an ubuntu base image, adds plocate, and copies the scripts in there.
 
 Edit the run.sh script, to have all folders you want to index. They must be mapped to /volume1/ in the container.
 I have three indexed folders for now:
@@ -50,7 +52,7 @@ Which can be seen in run.sh as:
 ```
 
 Make sure to add folders you want indexed in the same way. Each on a separate line, ending in a backslash.
-And make sure you do NOT remove the (not shown) -v line, which maps to /var/lib/mlocate, as that will contain the index.
+And make sure you do NOT remove the (not shown) -v line, which maps to /var/lib/plocate, as that will contain the index.
 
 Note: better do NOT map your synology root "/" to some docker folder, and also do not map complete "/volume1"
 from synology to docker /volume1. This will work, but will NOT mount the volume read only, which might be a
@@ -79,10 +81,10 @@ To make the "locate" and "updatedb" aliases available after every logon, you sho
 
 ```
 # next line must start with a dot and a space. This will add the aliases to the current shell context. Won't work without dot-space!
-. /volume1/docker/mlocate/locate-alias.sh
+. /volume1/docker/locate/locate-alias.sh
 ```
 
-Where /volume1/docker/mlocate/ of course must reflect the location where you installed the scripts.
+Where /volume1/docker/locate/ of course must reflect the location where you installed the scripts.
 
 Note: out of the box, only root can execute docker commands. If you do not want to run as root, to type "locate", there are multiple options to fix this.
 
@@ -91,8 +93,8 @@ Note: out of the box, only root can execute docker commands. If you do not want 
 sudo chown root:administrators /var/run/docker.sock
 
 # option 2 - add "sudo " in front of the docker commands in the locate-alias.sh file, like this:
-alias locate="sudo docker exec -ti mlocate locate"
-alias updatedb="sudo docker exec -ti mlocate /updatedb.sh"
+alias locate="sudo docker exec -ti locate locate"
+alias updatedb="sudo docker exec -ti locate /updatedb.sh"
 ```
 
 Both of these assume that your user is an admin user.
@@ -107,7 +109,7 @@ File /usr/local/bin/locate:
 ```
 #!/bin/bash
 
-docker exec -ti mlocate locate "$@"
+docker exec -ti locate locate "$@"
 ```
 
 File /usr/local/bin/updatedb:
@@ -115,7 +117,7 @@ File /usr/local/bin/updatedb:
 ```
 #!/bin/bash
 
-docker exec -ti mlocate /updatedb.sh
+docker exec -ti locate /updatedb.sh
 ```
 
 Add a line at the bottom of /etc/sudoers:

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-docker rm -f mlocate
+docker rm -f locate

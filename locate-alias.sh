@@ -1,4 +1,3 @@
 
-alias locate="docker exec -ti mlocate locate"
-alias updatedb="docker exec -ti mlocate /updatedb.sh"
-
+alias locate="docker exec -ti locate locate"
+alias updatedb="docker exec -ti locate /updatedb.sh"
